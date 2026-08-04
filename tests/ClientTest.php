@@ -93,3 +93,24 @@ it('verifyWebhook accepts the sha256= prefixed header', function () {
     expect($client->verifyWebhook('{"uuid":"abc"}', $signature, '1753600000'))->toBeTrue();
     expect($client->verifyWebhook('{"uuid":"abc"}', 'sha256=deadbeef', '1753600000'))->toBeFalse();
 });
+
+it('templateImportDocx отправляет документ и не шлёт пустое имя', function () {
+    [$client, $captured] = makeClient();
+    $client->templateImportDocx('UEsDBBQ=', 7);
+
+    $request = $captured[0];
+    expect($request['method'])->toBe('POST');
+    expect($request['url'])->toBe('https://printable.test/api/integration/template/import-docx');
+    expect($request['body']['docx_b64'])->toBe('UEsDBBQ=');
+    expect($request['body']['group_id'])->toBe(7);
+    // Имя необязательно: пустое поле сервис отклонит форматом, а не примет
+    // как «шаблон без названия».
+    expect($request['body'])->not->toHaveKey('name');
+});
+
+it('templateImportDocx передаёт имя, когда его задали', function () {
+    [$client, $captured] = makeClient();
+    $client->templateImportDocx('UEsDBBQ=', 7, 'Договор поставки');
+
+    expect($captured[0]['body']['name'])->toBe('Договор поставки');
+});

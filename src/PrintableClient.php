@@ -85,6 +85,23 @@ final class PrintableClient
         ]);
     }
 
+    /**
+     * Импорт Word-документа как черновика шаблона.
+     *
+     * Доступен credential с полным доступом и только там, где включён на
+     * инсталляции: сервис отвечает `docx-import-disabled`, если выключен.
+     *
+     * @return array<string, mixed>
+     */
+    public function templateImportDocx(string $docxB64, int $groupId, ?string $name = null): array
+    {
+        return $this->call('POST', 'template/import-docx', array_filter([
+            'docx_b64' => $docxB64,
+            'group_id' => $groupId,
+            'name' => $name,
+        ], static fn ($v) => $v !== null));
+    }
+
     // ── Print forms ────────────────────────────────────────────────────
 
     /**
