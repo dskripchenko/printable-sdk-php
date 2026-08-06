@@ -6,6 +6,8 @@ drafts and webhook verification — with the HMAC request signing
 (simple and strict canonical modes) built in and byte-compatible with the
 server implementation.
 
+> 🌐 **English** · [Deutsch](docs/de/README.md) · [Русский](docs/ru/README.md) · [中文](docs/zh/README.md)
+
 Zero runtime dependencies (`ext-curl`, `ext-json`). PHP 8.2+.
 
 ## Install
