@@ -103,8 +103,8 @@ it('templateImportDocx отправляет документ и не шлёт п
     expect($request['url'])->toBe('https://printable.test/api/integration/template/import-docx');
     expect($request['body']['docx_b64'])->toBe('UEsDBBQ=');
     expect($request['body']['group_id'])->toBe(7);
-    // Имя необязательно: пустое поле сервис отклонит форматом, а не примет
-    // как «шаблон без названия».
+    // The name is optional: the service rejects an empty field on format
+    // rather than accepting it as "a template with no title".
     expect($request['body'])->not->toHaveKey('name');
 });
 

@@ -19,7 +19,7 @@ it('signToken matches the server simple-mode formula', function () {
 
 it('signPayload matches server strict-mode vectors', function (array $payload, string $canonical, string $hash) {
     $signer = new Signer(VECTOR_SALT);
-    // Payload как его видит сервер: после json-decode.
+    // The payload as the server sees it: after a json decode.
     $decoded = json_decode((string) json_encode($payload), true);
     expect($signer->canonicalize($decoded))->toBe($canonical);
     expect($signer->signPayload($decoded, VECTOR_SECRET))->toBe($hash);

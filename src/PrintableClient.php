@@ -86,10 +86,11 @@ final class PrintableClient
     }
 
     /**
-     * Импорт Word-документа как черновика шаблона.
+     * Importing a Word document as a template draft.
      *
-     * Доступен credential с полным доступом и только там, где включён на
-     * инсталляции: сервис отвечает `docx-import-disabled`, если выключен.
+     * Available to a credential with full access and only where it is enabled on
+     * the installation: the service answers `docx-import-disabled` when it is
+     * off.
      *
      * @return array<string, mixed>
      */
