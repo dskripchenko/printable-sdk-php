@@ -103,6 +103,25 @@ final class PrintableClient
         ], static fn ($v) => $v !== null));
     }
 
+    /**
+     * Importing an Excel workbook (.xlsx) as a template draft: one section per
+     * non-empty sheet, printed at the sheet's own print scale.
+     *
+     * The group is an existing group's id, or a path ("Реестры / Отчёты") the
+     * service creates when it is missing.
+     *
+     * @return array<string, mixed> template, variables, warnings, groups_created, group_path, sheets
+     */
+    public function templateImportXlsx(string $xlsxB64, int|string $group, ?string $name = null): array
+    {
+        return $this->call('POST', 'template/import-xlsx', array_filter([
+            'xlsx_b64' => $xlsxB64,
+            'group_id' => is_int($group) ? $group : null,
+            'group' => is_string($group) ? $group : null,
+            'name' => $name,
+        ], static fn ($v) => $v !== null));
+    }
+
     // ── Print forms ────────────────────────────────────────────────────
 
     /**
@@ -118,6 +137,42 @@ final class PrintableClient
     public function printFormGet(string $uuid, string $format = 'link'): array
     {
         return $this->call('GET', 'print-form/get', ['uuid' => $uuid, 'format' => $format]);
+    }
+
+    /**
+     * Asking for the digest an external signer signs: for a document in
+     * `awaiting_signature`, with the signer's certificate (PEM, or DER in
+     * base64 as CryptoPro exports it). Sign the digest into a detached CMS and
+     * pass it to {@see printFormSignatureComplete()} before `expires_at`.
+     *
+     * @param  string|null $slot The signature field; null — the one the document waits for
+     * @return array<string, mixed> uuid, slot, digest_hex, digest_algorithm, digest_oid, expires_at
+     */
+    public function printFormSignatureRequest(string $uuid, string $certificate, ?string $slot = null): array
+    {
+        return $this->call('POST', 'print-form/signature-request', array_filter([
+            'uuid' => $uuid,
+            'certificate' => $certificate,
+            'slot' => $slot,
+        ], static fn ($v) => $v !== null));
+    }
+
+    /**
+     * Handing in the external signature: the detached CMS (base64 or PEM) for
+     * the digest of {@see printFormSignatureRequest()}. The answer is the
+     * document — `done` when every signature is in, else still
+     * `awaiting_signature` for the next signer.
+     *
+     * @return array<string, mixed>
+     */
+    public function printFormSignatureComplete(string $uuid, string $cms, ?string $slot = null, string $format = 'link'): array
+    {
+        return $this->call('POST', 'print-form/signature-complete', array_filter([
+            'uuid' => $uuid,
+            'cms' => $cms,
+            'slot' => $slot,
+            'format' => $format,
+        ], static fn ($v) => $v !== null));
     }
 
     /** @return array<string, mixed> */
