@@ -58,9 +58,13 @@ $status = $client->printFormBatchGet($batch['uuid']);
 | `templateContract($slug, $version?)` | `GET template/contract` |
 | `templateExport($slug, $version?)` | `GET template/export` |
 | `templateImport($packageB64, $groupId, $options?)` | `POST template/import` |
+| `templateImportDocx($docxB64, $groupId, $name?)` | `POST template/import-docx` |
+| `templateImportXlsx($xlsxB64, $groupIdOrPath, $name?)` | `POST template/import-xlsx` |
 | `printFormCreate($params)` | `POST print-form/create` |
 | `printFormGet($uuid, $format?)` | `GET print-form/get` |
 | `printFormRules($slug, $version?)` | `GET print-form/rules` |
+| `printFormSignatureRequest($uuid, $certificate, $slot?)` | `POST print-form/signature-request` |
+| `printFormSignatureComplete($uuid, $cms, $slot?, $format?)` | `POST print-form/signature-complete` |
 | `printFormBatch($params)` | `POST print-form/batch` |
 | `printFormBatchGet($uuid)` | `GET print-form/batch-get` |
 | `documentDraftCreate($params)` | `POST document-draft/create` |

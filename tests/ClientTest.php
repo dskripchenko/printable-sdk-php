@@ -114,3 +114,39 @@ it('templateImportDocx передаёт имя, когда его задали',
 
     expect($captured[0]['body']['name'])->toBe('Договор поставки');
 });
+
+it('templateImportXlsx принимает id группы или её путь', function () {
+    [$client, $captured] = makeClient();
+    $client->templateImportXlsx('UEsDBBQ=', 7);
+    $client->templateImportXlsx('UEsDBBQ=', 'Реестры / Отчёты', 'Отчёт');
+
+    expect($captured[0]['url'])->toBe('https://printable.test/api/integration/template/import-xlsx');
+    expect($captured[0]['body']['group_id'])->toBe(7);
+    expect($captured[0]['body'])->not->toHaveKey('group');
+    expect($captured[0]['body'])->not->toHaveKey('name');
+    expect($captured[1]['body']['group'])->toBe('Реестры / Отчёты');
+    expect($captured[1]['body'])->not->toHaveKey('group_id');
+    expect($captured[1]['body']['name'])->toBe('Отчёт');
+});
+
+it('printFormSignatureRequest шлёт сертификат и поле подписи, когда оно задано', function () {
+    [$client, $captured] = makeClient();
+    $client->printFormSignatureRequest('11111111-1111-1111-1111-111111111111', 'MIIB');
+    $client->printFormSignatureRequest('11111111-1111-1111-1111-111111111111', 'MIIB', 'counterparty');
+
+    expect($captured[0]['method'])->toBe('POST');
+    expect($captured[0]['url'])->toBe('https://printable.test/api/integration/print-form/signature-request');
+    expect($captured[0]['body']['certificate'])->toBe('MIIB');
+    expect($captured[0]['body'])->not->toHaveKey('slot');
+    expect($captured[1]['body']['slot'])->toBe('counterparty');
+});
+
+it('printFormSignatureComplete шлёт CMS и формат ответа', function () {
+    [$client, $captured] = makeClient();
+    $client->printFormSignatureComplete('11111111-1111-1111-1111-111111111111', 'MIAG', format: 'b64');
+
+    expect($captured[0]['url'])->toBe('https://printable.test/api/integration/print-form/signature-complete');
+    expect($captured[0]['body']['cms'])->toBe('MIAG');
+    expect($captured[0]['body']['format'])->toBe('b64');
+    expect($captured[0]['body'])->not->toHaveKey('slot');
+});
