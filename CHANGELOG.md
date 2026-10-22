@@ -17,6 +17,13 @@ the tagged commit history.
   in the detached CMS.
 - `templateImportXlsx()` — an Excel workbook as a template draft; the group by
   id or by path (created when missing).
+- `printFormSignatureInvite()` — inviting the document's recipient to sign it via a personal
+  link to a signing page (CryptoPro plug-in, a detached .sig upload, or a
+  PDF signed in its field); with an email the service also sends the link.
+- Docs: the `preset`, `signing` (profiles, recipients) and `protection`
+  parameters of `print-form/create` / `print-form/batch`, the `protection`
+  block of the response (passwords are returned only once), `method` and
+  `signature_link` on signature slots.
 
 ## [1.0.0] - 2026-07-27
 

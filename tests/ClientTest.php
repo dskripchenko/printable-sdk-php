@@ -150,3 +150,19 @@ it('printFormSignatureComplete шлёт CMS и формат ответа', funct
     expect($captured[0]['body']['format'])->toBe('b64');
     expect($captured[0]['body'])->not->toHaveKey('slot');
 });
+
+it('printFormSignatureInvite шлёт адрес и имя получателя, пропуская незаданные', function () {
+    [$client, $captured] = makeClient();
+    $client->printFormSignatureInvite('11111111-1111-1111-1111-111111111111');
+    $client->printFormSignatureInvite('11111111-1111-1111-1111-111111111111', 'buyer@example.com', 'buyer', 'Buyer LLC');
+
+    expect($captured[0]['method'])->toBe('POST');
+    expect($captured[0]['url'])->toBe('https://printable.test/api/integration/print-form/signature-invite');
+    expect($captured[0]['body']['uuid'])->toBe('11111111-1111-1111-1111-111111111111');
+    expect($captured[0]['body'])->not->toHaveKey('email');
+    expect($captured[0]['body'])->not->toHaveKey('slot');
+    expect($captured[0]['body'])->not->toHaveKey('name');
+    expect($captured[1]['body']['email'])->toBe('buyer@example.com');
+    expect($captured[1]['body']['slot'])->toBe('buyer');
+    expect($captured[1]['body']['name'])->toBe('Buyer LLC');
+});
