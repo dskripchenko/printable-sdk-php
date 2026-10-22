@@ -175,6 +175,27 @@ final class PrintableClient
         ], static fn ($v) => $v !== null));
     }
 
+    /**
+     * Inviting the document's recipient to sign it themselves: the service
+     * issues a personal link to a signing page (CryptoPro browser plug-in,
+     * a detached .sig upload, or a PDF signed in its field). With `$email`
+     * the service also sends the link by email.
+     *
+     * @param  string|null $email Where to send the link; null — only return it
+     * @param  string|null $slot  The signature field; null — the one the document waits for
+     * @param  string|null $name  The recipient's name for the invitation
+     * @return array<string, mixed> uuid, slot, sign_url, expires_at, sent
+     */
+    public function printFormSignatureInvite(string $uuid, ?string $email = null, ?string $slot = null, ?string $name = null): array
+    {
+        return $this->call('POST', 'print-form/signature-invite', array_filter([
+            'uuid' => $uuid,
+            'slot' => $slot,
+            'email' => $email,
+            'name' => $name,
+        ], static fn ($v) => $v !== null));
+    }
+
     /** @return array<string, mixed> */
     public function printFormRules(string $template, ?string $version = null): array
     {

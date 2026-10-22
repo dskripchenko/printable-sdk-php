@@ -65,6 +65,7 @@ $status = $client->printFormBatchGet($batch['uuid']);
 | `printFormRules($slug, $version?)` | `GET print-form/rules` |
 | `printFormSignatureRequest($uuid, $certificate, $slot?)` | `POST print-form/signature-request` |
 | `printFormSignatureComplete($uuid, $cms, $slot?, $format?)` | `POST print-form/signature-complete` |
+| `printFormSignatureInvite($uuid, $email?, $slot?, $name?)` | `POST print-form/signature-invite` |
 | `printFormBatch($params)` | `POST print-form/batch` |
 | `printFormBatchGet($uuid)` | `GET print-form/batch-get` |
 | `documentDraftCreate($params)` | `POST document-draft/create` |
@@ -74,6 +75,38 @@ $status = $client->printFormBatchGet($batch['uuid']);
 Every method returns the decoded `payload` array of the response envelope.
 Errors (non-2xx or `success: false`) raise `PrintableException` with
 `status`, `errorKey` and the raw error `payload`.
+
+## Signing and protection
+
+`print-form/create` and `print-form/batch` accept optional parameters, passed as-is in the params:
+
+- `preset` — a print-preset code used instead of `template` (`document-draft/create` accepts it too);
+- `signing` — a signature profile per slot, a visible or invisible signature, the reason, and `recipients` — the counterparties who sign the document themselves;
+- `protection` — PDF protection: `{"generate": true}` lets the service generate the password, or pass your own one under `password`; the optional `permissions` is `read_print`, `read_only` or `forms_sign`.
+
+The response then carries a `protection` block (`protected`, `permissions`, `password`, `owner_password`). **Passwords are returned only once** — in the response that issues the document; afterwards they come back masked (`••••••••`), so store them right away. Each `signature.slots[]` item may carry `method` (`cms`, `plugin`, `pdf` or `sig`) and `signature_link` — the recipient's detached `.sig`.
+
+```php
+$doc = $client->printFormCreate([
+    'preset' => 'contract-signed',
+    'variables' => ['contract' => ['number' => 15]],
+    'signing' => [
+        'slots' => ['company' => ['profile' => 'ceo']],
+        'invisible' => false,
+        'reason' => 'Contract 15',
+        'recipients' => ['buyer' => ['email' => 'buyer@example.com', 'name' => 'Buyer LLC']],
+    ],
+    'protection' => ['generate' => true, 'permissions' => 'read_print'],
+]);
+// The password comes only in this response — store it now
+$protection = $doc['protection'];
+
+// Hand the link over yourself, or let the service email it
+$invite = $client->printFormSignatureInvite($doc['uuid'], 'buyer@example.com', 'buyer', 'Buyer LLC');
+echo $invite['sign_url'];
+```
+
+`printFormSignatureInvite()` invites the recipient to sign: it returns `sign_url` — a personal link to the signing page (CryptoPro browser plug-in, a detached `.sig` upload, or a PDF signed in its field) — and `expires_at`. With an email address the service also sends the link (`sent`).
 
 ## Webhooks
 
