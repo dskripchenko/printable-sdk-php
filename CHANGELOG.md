@@ -10,7 +10,10 @@ the tagged commit history.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-22
+
 ### Added
+- `templateImportDocx()` — a Word document as a template draft.
 - `printFormSignatureRequest()` and `printFormSignatureComplete()` — signing a
   document by an external signer (a qualified signature in the signer's own
   CryptoPro, a token): ask for the digest with the signer's certificate, hand
